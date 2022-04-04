@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "264405302257",
+    "project_id": "njawani-e7217",
+    "storage_bucket": "njawani-e7217.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264405302257:android:16fcd611e5cea225856250",
+        "android_client_info": {
+          "package_name": "org.pkmnjawani.njawani"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264405302257-gpka1n3k7h581gad1jnr6rtgd87758o9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiP4WDmkVEEWRWSxdcfaTucrwD72C84Kc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264405302257-gpka1n3k7h581gad1jnr6rtgd87758o9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
