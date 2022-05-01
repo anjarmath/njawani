@@ -6,3 +6,4 @@ This App is build using Flutter Framework, also working with:
 - Firebase
 
 Screenshot:
+![alt text](https://github.com/anjarmath/njawani/blob/master/njawani.jpg?raw=true)
