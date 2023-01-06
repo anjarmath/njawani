@@ -1,6 +1,7 @@
 # Njawani - Android Object Detection App
 
 [![N|Solid](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)]() [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+
 _Njawani is an object detection app for learning aksara Jawa, one of traditional script in Indonesia._
 
 ### Why build this app?
@@ -14,4 +15,5 @@ Javanese script is a traditional script in Indonesia that is used to write on va
 |Integrate model|![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?style=for-the-badge&logo=opencv&logoColor=white)|
 ### Download App
 [👉Get this App from here👈](https://anjarmath.github.io/njawani-app/)
+
 > Wong jawa ojo nganti ilang jawane
