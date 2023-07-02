@@ -58,6 +58,21 @@ public class QRCodeDetector {
 
 
     //
+    // C++:  void cv::QRCodeDetector::setUseAlignmentMarkers(bool useAlignmentMarkers)
+    //
+
+    /**
+     * use markers to improve the position of the corners of the QR code
+     *
+     * alignmentMarkers using by default
+     * @param useAlignmentMarkers automatically generated
+     */
+    public void setUseAlignmentMarkers(boolean useAlignmentMarkers) {
+        setUseAlignmentMarkers_0(nativeObj, useAlignmentMarkers);
+    }
+
+
+    //
     // C++:  bool cv::QRCodeDetector::detect(Mat img, Mat& points)
     //
 
@@ -312,6 +327,9 @@ public class QRCodeDetector {
 
     // C++:  void cv::QRCodeDetector::setEpsY(double epsY)
     private static native void setEpsY_0(long nativeObj, double epsY);
+
+    // C++:  void cv::QRCodeDetector::setUseAlignmentMarkers(bool useAlignmentMarkers)
+    private static native void setUseAlignmentMarkers_0(long nativeObj, boolean useAlignmentMarkers);
 
     // C++:  bool cv::QRCodeDetector::detect(Mat img, Mat& points)
     private static native boolean detect_0(long nativeObj, long img_nativeObj, long points_nativeObj);

@@ -16,12 +16,12 @@ import org.opencv.utils.Converters;
 
 public class Core {
     // these constants are wrapped inside functions to prevent inlining
-    private static String getVersion() { return "4.5.5"; }
-    private static String getNativeLibraryName() { return "opencv_java455"; }
+    private static String getVersion() { return "4.7.0-dev"; }
+    private static String getNativeLibraryName() { return "opencv_java470"; }
     private static int getVersionMajorJ() { return 4; }
-    private static int getVersionMinorJ() { return 5; }
-    private static int getVersionRevisionJ() { return 5; }
-    private static String getVersionStatusJ() { return ""; }
+    private static int getVersionMinorJ() { return 7; }
+    private static int getVersionRevisionJ() { return 0; }
+    private static String getVersionStatusJ() { return "-dev"; }
 
     public static final String VERSION = getVersion();
     public static final String NATIVE_LIBRARY_NAME = getNativeLibraryName();
@@ -2335,6 +2335,21 @@ public class Core {
 
 
     //
+    // C++:  void cv::flipND(Mat src, Mat& dst, int axis)
+    //
+
+    /**
+     * Flips a n-dimensional at given axis
+     * @param src input array
+     * @param dst output array that has the same shape of src
+     * @param axis axis that performs a flip on. 0 &lt;= axis &lt; src.dims.
+     */
+    public static void flipND(Mat src, Mat dst, int axis) {
+        flipND_0(src.nativeObj, dst.nativeObj, axis);
+    }
+
+
+    //
     // C++:  void cv::rotate(Mat src, Mat& dst, int rotateCode)
     //
 
@@ -3436,6 +3451,25 @@ public class Core {
      */
     public static void transpose(Mat src, Mat dst) {
         transpose_0(src.nativeObj, dst.nativeObj);
+    }
+
+
+    //
+    // C++:  void cv::transposeND(Mat src, vector_int order, Mat& dst)
+    //
+
+    /**
+     * Transpose for n-dimensional matrices.
+     *
+     * <b>Note:</b> Input should be continuous single-channel matrix.
+     * @param src input array.
+     * @param order a permutation of [0,1,..,N-1] where N is the number of axes of src.
+     * The i’th axis of dst will correspond to the axis numbered order[i] of the input.
+     * @param dst output array of the same type as src.
+     */
+    public static void transposeND(Mat src, MatOfInt order, Mat dst) {
+        Mat order_mat = order;
+        transposeND_0(src.nativeObj, order_mat.nativeObj, dst.nativeObj);
     }
 
 
@@ -5951,6 +5985,9 @@ public static MinMaxLocResult minMaxLoc(Mat src) {
     // C++:  void cv::flip(Mat src, Mat& dst, int flipCode)
     private static native void flip_0(long src_nativeObj, long dst_nativeObj, int flipCode);
 
+    // C++:  void cv::flipND(Mat src, Mat& dst, int axis)
+    private static native void flipND_0(long src_nativeObj, long dst_nativeObj, int axis);
+
     // C++:  void cv::rotate(Mat src, Mat& dst, int rotateCode)
     private static native void rotate_0(long src_nativeObj, long dst_nativeObj, int rotateCode);
 
@@ -6046,6 +6083,9 @@ public static MinMaxLocResult minMaxLoc(Mat src) {
 
     // C++:  void cv::transpose(Mat src, Mat& dst)
     private static native void transpose_0(long src_nativeObj, long dst_nativeObj);
+
+    // C++:  void cv::transposeND(Mat src, vector_int order, Mat& dst)
+    private static native void transposeND_0(long src_nativeObj, long order_mat_nativeObj, long dst_nativeObj);
 
     // C++:  void cv::transform(Mat src, Mat& dst, Mat m)
     private static native void transform_0(long src_nativeObj, long dst_nativeObj, long m_nativeObj);

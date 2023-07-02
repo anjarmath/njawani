@@ -58,7 +58,7 @@
 //
 // - Use find_package() in app/CMakeLists.txt:
 //
-//   find_package(OpenCV 4.5 REQUIRED java)
+//   find_package(OpenCV 4.7 REQUIRED java)
 //   ...
 //   target_link_libraries(native-lib ${OpenCV_LIBRARIES})
 //
@@ -90,17 +90,17 @@
 
 apply plugin: 'com.android.library'
 
-def openCVersionName = "4.5.5"
-def openCVersionCode = ((4 * 100 + 5) * 100 + 5) * 10 + 0
+def openCVersionName = "4.7.0-dev"
+def openCVersionCode = ((4 * 100 + 7) * 100 + 0) * 10 + 0
 
 println "OpenCV: " +openCVersionName + " " + project.buildscript.sourceFile
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
 
         versionCode openCVersionCode
         versionName openCVersionName
@@ -143,7 +143,6 @@ android {
             path (project.projectDir.toString() + '/libcxx_helper/CMakeLists.txt')
         }
     }
-    ndkVersion '21.1.6352462'
 }
 
 dependencies {

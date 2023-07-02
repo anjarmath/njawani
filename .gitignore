@@ -12,4 +12,12 @@
 /captures
 .externalNativeBuild
 .cxx
+.aar
 local.properties
+
+/app/build
+sdk/build
+/app/debug
+/app/release
+/app/release/
+/sdk/build/

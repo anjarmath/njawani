@@ -146,7 +146,7 @@ public class Net {
 
 
     //
-    // C++:  Ptr_Layer cv::dnn::Net::getLayer(LayerId layerId)
+    // C++:  Ptr_Layer cv::dnn::Net::getLayer(int layerId)
     //
 
     /**
@@ -154,8 +154,40 @@ public class Net {
      * @param layerId automatically generated
      * @return automatically generated
      */
+    public Layer getLayer(int layerId) {
+        return Layer.__fromPtr__(getLayer_0(nativeObj, layerId));
+    }
+
+
+    //
+    // C++:  Ptr_Layer cv::dnn::Net::getLayer(String layerName)
+    //
+
+    /**
+     *
+     * @deprecated Use int getLayerId(const String &amp;layer)
+     * @param layerName automatically generated
+     * @return automatically generated
+     */
+    @Deprecated
+    public Layer getLayer(String layerName) {
+        return Layer.__fromPtr__(getLayer_1(nativeObj, layerName));
+    }
+
+
+    //
+    // C++:  Ptr_Layer cv::dnn::Net::getLayer(LayerId layerId)
+    //
+
+    /**
+     *
+     * @deprecated to be removed
+     * @param layerId automatically generated
+     * @return automatically generated
+     */
+    @Deprecated
     public Layer getLayer(DictValue layerId) {
-        return Layer.__fromPtr__(getLayer_0(nativeObj, layerId.getNativeObjAddr()));
+        return Layer.__fromPtr__(getLayer_2(nativeObj, layerId.getNativeObjAddr()));
     }
 
 
@@ -301,7 +333,7 @@ public class Net {
 
 
     //
-    // C++:  Net cv::dnn::Net::quantize(vector_Mat calibData, int inputsDtype, int outputsDtype)
+    // C++:  Net cv::dnn::Net::quantize(vector_Mat calibData, int inputsDtype, int outputsDtype, bool perChannel = true)
     //
 
     /**
@@ -309,11 +341,26 @@ public class Net {
      * @param calibData Calibration data to compute the quantization parameters.
      * @param inputsDtype Datatype of quantized net's inputs. Can be CV_32F or CV_8S.
      * @param outputsDtype Datatype of quantized net's outputs. Can be CV_32F or CV_8S.
+     * @param perChannel Quantization granularity of quantized Net. The default is true, that means quantize model
+     * in per-channel way (channel-wise). Set it false to quantize model in per-tensor way (or tensor-wise).
+     * @return automatically generated
+     */
+    public Net quantize(List<Mat> calibData, int inputsDtype, int outputsDtype, boolean perChannel) {
+        Mat calibData_mat = Converters.vector_Mat_to_Mat(calibData);
+        return new Net(quantize_0(nativeObj, calibData_mat.nativeObj, inputsDtype, outputsDtype, perChannel));
+    }
+
+    /**
+     * Returns a quantized Net from a floating-point Net.
+     * @param calibData Calibration data to compute the quantization parameters.
+     * @param inputsDtype Datatype of quantized net's inputs. Can be CV_32F or CV_8S.
+     * @param outputsDtype Datatype of quantized net's outputs. Can be CV_32F or CV_8S.
+     * in per-channel way (channel-wise). Set it false to quantize model in per-tensor way (or tensor-wise).
      * @return automatically generated
      */
     public Net quantize(List<Mat> calibData, int inputsDtype, int outputsDtype) {
         Mat calibData_mat = Converters.vector_Mat_to_Mat(calibData);
-        return new Net(quantize_0(nativeObj, calibData_mat.nativeObj, inputsDtype, outputsDtype));
+        return new Net(quantize_1(nativeObj, calibData_mat.nativeObj, inputsDtype, outputsDtype));
     }
 
 
@@ -474,7 +521,7 @@ public class Net {
 
 
     //
-    // C++:  void cv::dnn::Net::setParam(LayerId layer, int numParam, Mat blob)
+    // C++:  void cv::dnn::Net::setParam(int layer, int numParam, Mat blob)
     //
 
     /**
@@ -486,13 +533,22 @@ public class Net {
      * <b>Note:</b> If shape of the new blob differs from the previous shape,
      * then the following forward pass may fail.
      */
-    public void setParam(DictValue layer, int numParam, Mat blob) {
-        setParam_0(nativeObj, layer.getNativeObjAddr(), numParam, blob.nativeObj);
+    public void setParam(int layer, int numParam, Mat blob) {
+        setParam_0(nativeObj, layer, numParam, blob.nativeObj);
     }
 
 
     //
-    // C++:  Mat cv::dnn::Net::getParam(LayerId layer, int numParam = 0)
+    // C++:  void cv::dnn::Net::setParam(String layerName, int numParam, Mat blob)
+    //
+
+    public void setParam(String layerName, int numParam, Mat blob) {
+        setParam_1(nativeObj, layerName, numParam, blob.nativeObj);
+    }
+
+
+    //
+    // C++:  Mat cv::dnn::Net::getParam(int layer, int numParam = 0)
     //
 
     /**
@@ -502,8 +558,8 @@ public class Net {
      * SEE: Layer::blobs
      * @return automatically generated
      */
-    public Mat getParam(DictValue layer, int numParam) {
-        return new Mat(getParam_0(nativeObj, layer.getNativeObjAddr(), numParam));
+    public Mat getParam(int layer, int numParam) {
+        return new Mat(getParam_0(nativeObj, layer, numParam));
     }
 
     /**
@@ -512,8 +568,21 @@ public class Net {
      * SEE: Layer::blobs
      * @return automatically generated
      */
-    public Mat getParam(DictValue layer) {
-        return new Mat(getParam_1(nativeObj, layer.getNativeObjAddr()));
+    public Mat getParam(int layer) {
+        return new Mat(getParam_1(nativeObj, layer));
+    }
+
+
+    //
+    // C++:  Mat cv::dnn::Net::getParam(String layerName, int numParam = 0)
+    //
+
+    public Mat getParam(String layerName, int numParam) {
+        return new Mat(getParam_2(nativeObj, layerName, numParam));
+    }
+
+    public Mat getParam(String layerName) {
+        return new Mat(getParam_3(nativeObj, layerName));
     }
 
 
@@ -523,6 +592,8 @@ public class Net {
 
     /**
      * Returns indexes of layers with unconnected outputs.
+     *
+     * FIXIT: Rework API to registerOutput() approach, deprecate this call
      * @return automatically generated
      */
     public MatOfInt getUnconnectedOutLayers() {
@@ -536,6 +607,8 @@ public class Net {
 
     /**
      * Returns names of layers with unconnected outputs.
+     *
+     * FIXIT: Rework API to registerOutput() approach, deprecate this call
      * @return automatically generated
      */
     public List<String> getUnconnectedOutLayersNames() {
@@ -682,6 +755,20 @@ public class Net {
 
 
     //
+    // C++:  void cv::dnn::Net::enableWinograd(bool useWinograd)
+    //
+
+    /**
+     * Enables or disables the Winograd compute branch. The Winograd compute branch can speed up
+     * 3x3 Convolution at a small loss of accuracy.
+     * @param useWinograd true to enable the Winograd compute branch. The default is true.
+     */
+    public void enableWinograd(boolean useWinograd) {
+        enableWinograd_0(nativeObj, useWinograd);
+    }
+
+
+    //
     // C++:  int64 cv::dnn::Net::getPerfProfile(vector_double& timings)
     //
 
@@ -731,8 +818,14 @@ public class Net {
     // C++:  vector_String cv::dnn::Net::getLayerNames()
     private static native List<String> getLayerNames_0(long nativeObj);
 
+    // C++:  Ptr_Layer cv::dnn::Net::getLayer(int layerId)
+    private static native long getLayer_0(long nativeObj, int layerId);
+
+    // C++:  Ptr_Layer cv::dnn::Net::getLayer(String layerName)
+    private static native long getLayer_1(long nativeObj, String layerName);
+
     // C++:  Ptr_Layer cv::dnn::Net::getLayer(LayerId layerId)
-    private static native long getLayer_0(long nativeObj, long layerId_nativeObj);
+    private static native long getLayer_2(long nativeObj, long layerId_nativeObj);
 
     // C++:  void cv::dnn::Net::connect(String outPin, String inpPin)
     private static native void connect_0(long nativeObj, String outPin, String inpPin);
@@ -754,8 +847,9 @@ public class Net {
     // C++:  void cv::dnn::Net::forward(vector_Mat& outputBlobs, vector_String outBlobNames)
     private static native void forward_4(long nativeObj, long outputBlobs_mat_nativeObj, List<String> outBlobNames);
 
-    // C++:  Net cv::dnn::Net::quantize(vector_Mat calibData, int inputsDtype, int outputsDtype)
-    private static native long quantize_0(long nativeObj, long calibData_mat_nativeObj, int inputsDtype, int outputsDtype);
+    // C++:  Net cv::dnn::Net::quantize(vector_Mat calibData, int inputsDtype, int outputsDtype, bool perChannel = true)
+    private static native long quantize_0(long nativeObj, long calibData_mat_nativeObj, int inputsDtype, int outputsDtype, boolean perChannel);
+    private static native long quantize_1(long nativeObj, long calibData_mat_nativeObj, int inputsDtype, int outputsDtype);
 
     // C++:  void cv::dnn::Net::getInputDetails(vector_float& scales, vector_int& zeropoints)
     private static native void getInputDetails_0(long nativeObj, long scales_mat_nativeObj, long zeropoints_mat_nativeObj);
@@ -778,12 +872,19 @@ public class Net {
     private static native void setInput_2(long nativeObj, long blob_nativeObj, String name);
     private static native void setInput_3(long nativeObj, long blob_nativeObj);
 
-    // C++:  void cv::dnn::Net::setParam(LayerId layer, int numParam, Mat blob)
-    private static native void setParam_0(long nativeObj, long layer_nativeObj, int numParam, long blob_nativeObj);
+    // C++:  void cv::dnn::Net::setParam(int layer, int numParam, Mat blob)
+    private static native void setParam_0(long nativeObj, int layer, int numParam, long blob_nativeObj);
 
-    // C++:  Mat cv::dnn::Net::getParam(LayerId layer, int numParam = 0)
-    private static native long getParam_0(long nativeObj, long layer_nativeObj, int numParam);
-    private static native long getParam_1(long nativeObj, long layer_nativeObj);
+    // C++:  void cv::dnn::Net::setParam(String layerName, int numParam, Mat blob)
+    private static native void setParam_1(long nativeObj, String layerName, int numParam, long blob_nativeObj);
+
+    // C++:  Mat cv::dnn::Net::getParam(int layer, int numParam = 0)
+    private static native long getParam_0(long nativeObj, int layer, int numParam);
+    private static native long getParam_1(long nativeObj, int layer);
+
+    // C++:  Mat cv::dnn::Net::getParam(String layerName, int numParam = 0)
+    private static native long getParam_2(long nativeObj, String layerName, int numParam);
+    private static native long getParam_3(long nativeObj, String layerName);
 
     // C++:  vector_int cv::dnn::Net::getUnconnectedOutLayers()
     private static native long getUnconnectedOutLayers_0(long nativeObj);
@@ -820,6 +921,9 @@ public class Net {
 
     // C++:  void cv::dnn::Net::enableFusion(bool fusion)
     private static native void enableFusion_0(long nativeObj, boolean fusion);
+
+    // C++:  void cv::dnn::Net::enableWinograd(bool useWinograd)
+    private static native void enableWinograd_0(long nativeObj, boolean useWinograd);
 
     // C++:  int64 cv::dnn::Net::getPerfProfile(vector_double& timings)
     private static native long getPerfProfile_0(long nativeObj, long timings_mat_nativeObj);

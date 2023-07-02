@@ -1102,6 +1102,13 @@ around both axes.
 */
 CV_EXPORTS_W void flip(InputArray src, OutputArray dst, int flipCode);
 
+/** @brief Flips a n-dimensional at given axis
+ *  @param src input array
+ *  @param dst output array that has the same shape of src
+ *  @param axis axis that performs a flip on. 0 <= axis < src.dims.
+ */
+CV_EXPORTS_W void flipND(InputArray src, OutputArray dst, int axis);
+
 enum RotateFlags {
     ROTATE_90_CLOCKWISE = 0, //!<Rotate 90 degrees clockwise
     ROTATE_180 = 1, //!<Rotate 180 degrees clockwise
@@ -1738,6 +1745,16 @@ should be done separately if needed.
 @param dst output array of the same type as src.
 */
 CV_EXPORTS_W void transpose(InputArray src, OutputArray dst);
+
+/** @brief Transpose for n-dimensional matrices.
+ *
+ * @note Input should be continuous single-channel matrix.
+ * @param src input array.
+ * @param order a permutation of [0,1,..,N-1] where N is the number of axes of src.
+ * The i’th axis of dst will correspond to the axis numbered order[i] of the input.
+ * @param dst output array of the same type as src.
+ */
+CV_EXPORTS_W void transposeND(InputArray src, const std::vector<int>& order, OutputArray dst);
 
 /** @brief Performs the matrix transformation of every array element.
 
@@ -3132,12 +3149,16 @@ public:
 
     /** @brief Stores algorithm parameters in a file storage
     */
-    virtual void write(FileStorage& fs) const { CV_UNUSED(fs); }
+    CV_WRAP virtual void write(FileStorage& fs) const { CV_UNUSED(fs); }
 
-    /** @brief simplified API for language bindings
+    /**
     * @overload
     */
-    CV_WRAP void write(const Ptr<FileStorage>& fs, const String& name = String()) const;
+    CV_WRAP void write(FileStorage& fs, const String& name) const;
+#if CV_VERSION_MAJOR < 5
+    /** @deprecated */
+    void write(const Ptr<FileStorage>& fs, const String& name = String()) const;
+#endif
 
     /** @brief Reads algorithm parameters from a file storage
     */

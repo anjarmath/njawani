@@ -1305,7 +1305,7 @@ public class Imgproc {
      * For every pixel \( (x, y) \) in the source image, the function calculates the sum of squares of those neighboring
      * pixel values which overlap the filter placed over the pixel \( (x, y) \).
      *
-     * The unnormalized square box filter can be useful in computing local image statistics such as the the local
+     * The unnormalized square box filter can be useful in computing local image statistics such as the local
      * variance and standard deviation around the neighborhood of a pixel.
      *
      * @param src input image
@@ -1328,7 +1328,7 @@ public class Imgproc {
      * For every pixel \( (x, y) \) in the source image, the function calculates the sum of squares of those neighboring
      * pixel values which overlap the filter placed over the pixel \( (x, y) \).
      *
-     * The unnormalized square box filter can be useful in computing local image statistics such as the the local
+     * The unnormalized square box filter can be useful in computing local image statistics such as the local
      * variance and standard deviation around the neighborhood of a pixel.
      *
      * @param src input image
@@ -1350,7 +1350,7 @@ public class Imgproc {
      * For every pixel \( (x, y) \) in the source image, the function calculates the sum of squares of those neighboring
      * pixel values which overlap the filter placed over the pixel \( (x, y) \).
      *
-     * The unnormalized square box filter can be useful in computing local image statistics such as the the local
+     * The unnormalized square box filter can be useful in computing local image statistics such as the local
      * variance and standard deviation around the neighborhood of a pixel.
      *
      * @param src input image
@@ -1371,7 +1371,7 @@ public class Imgproc {
      * For every pixel \( (x, y) \) in the source image, the function calculates the sum of squares of those neighboring
      * pixel values which overlap the filter placed over the pixel \( (x, y) \).
      *
-     * The unnormalized square box filter can be useful in computing local image statistics such as the the local
+     * The unnormalized square box filter can be useful in computing local image statistics such as the local
      * variance and standard deviation around the neighborhood of a pixel.
      *
      * @param src input image
@@ -1454,6 +1454,31 @@ public class Imgproc {
      */
     public static void blur(Mat src, Mat dst, Size ksize) {
         blur_2(src.nativeObj, dst.nativeObj, ksize.width, ksize.height);
+    }
+
+
+    //
+    // C++:  void cv::stackBlur(Mat src, Mat& dst, Size ksize)
+    //
+
+    /**
+     * Blurs an image using the stackBlur.
+     *
+     * The function applies and stackBlur to an image.
+     * stackBlur can generate similar results as Gaussian blur, and the time consumption does not increase with the increase of kernel size.
+     * It creates a kind of moving stack of colors whilst scanning through the image. Thereby it just has to add one new block of color to the right side
+     * of the stack and remove the leftmost color. The remaining colors on the topmost layer of the stack are either added on or reduced by one,
+     * depending on if they are on the right or on the left side of the stack. The only supported borderType is BORDER_REPLICATE.
+     * Original paper was proposed by Mario Klingemann, which can be found http://underdestruction.com/2004/02/25/stackblur-2004.
+     *
+     * @param src input image. The number of channels can be arbitrary, but the depth should be one of
+     * CV_8U, CV_16U, CV_16S or CV_32F.
+     * @param dst output image of the same size and type as src.
+     * @param ksize stack-blurring kernel size. The ksize.width and ksize.height can differ but they both must be
+     * positive and odd.
+     */
+    public static void stackBlur(Mat src, Mat dst, Size ksize) {
+        stackBlur_0(src.nativeObj, dst.nativeObj, ksize.width, ksize.height);
     }
 
 
@@ -2110,7 +2135,7 @@ public class Imgproc {
      *
      * @param src Source image.
      * @param dst Destination image of the same size and the same number of channels as src .
-     * @param ddepth Desired depth of the destination image.
+     * @param ddepth Desired depth of the destination image, see REF: filter_depths "combinations".
      * @param ksize Aperture size used to compute the second-derivative filters. See #getDerivKernels for
      * details. The size must be positive and odd.
      * @param scale Optional scale factor for the computed Laplacian values. By default, no scaling is
@@ -2138,7 +2163,7 @@ public class Imgproc {
      *
      * @param src Source image.
      * @param dst Destination image of the same size and the same number of channels as src .
-     * @param ddepth Desired depth of the destination image.
+     * @param ddepth Desired depth of the destination image, see REF: filter_depths "combinations".
      * @param ksize Aperture size used to compute the second-derivative filters. See #getDerivKernels for
      * details. The size must be positive and odd.
      * @param scale Optional scale factor for the computed Laplacian values. By default, no scaling is
@@ -2165,7 +2190,7 @@ public class Imgproc {
      *
      * @param src Source image.
      * @param dst Destination image of the same size and the same number of channels as src .
-     * @param ddepth Desired depth of the destination image.
+     * @param ddepth Desired depth of the destination image, see REF: filter_depths "combinations".
      * @param ksize Aperture size used to compute the second-derivative filters. See #getDerivKernels for
      * details. The size must be positive and odd.
      * @param scale Optional scale factor for the computed Laplacian values. By default, no scaling is
@@ -2191,7 +2216,7 @@ public class Imgproc {
      *
      * @param src Source image.
      * @param dst Destination image of the same size and the same number of channels as src .
-     * @param ddepth Desired depth of the destination image.
+     * @param ddepth Desired depth of the destination image, see REF: filter_depths "combinations".
      * @param ksize Aperture size used to compute the second-derivative filters. See #getDerivKernels for
      * details. The size must be positive and odd.
      * applied. See #getDerivKernels for details.
@@ -2216,7 +2241,7 @@ public class Imgproc {
      *
      * @param src Source image.
      * @param dst Destination image of the same size and the same number of channels as src .
-     * @param ddepth Desired depth of the destination image.
+     * @param ddepth Desired depth of the destination image, see REF: filter_depths "combinations".
      * details. The size must be positive and odd.
      * applied. See #getDerivKernels for details.
      * SEE:  Sobel, Scharr
@@ -3114,23 +3139,24 @@ public class Imgproc {
      *
      * @param image 8-bit, single-channel binary source image. The image may be modified by the function.
      * @param lines Output vector of lines. Each line is represented by a 2 or 3 element vector
-     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\) . \(\rho\) is the distance from the coordinate origin \((0,0)\) (top-left corner of
-     * the image). \(\theta\) is the line rotation angle in radians (
-     * \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ).
+     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\), where \(\rho\) is the distance from
+     * the coordinate origin \((0,0)\) (top-left corner of the image), \(\theta\) is the line rotation
+     * angle in radians ( \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ), and
      * \(\textrm{votes}\) is the value of accumulator.
      * @param rho Distance resolution of the accumulator in pixels.
      * @param theta Angle resolution of the accumulator in radians.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
-     * @param srn For the multi-scale Hough transform, it is a divisor for the distance resolution rho .
+     * @param srn For the multi-scale Hough transform, it is a divisor for the distance resolution rho.
      * The coarse accumulator distance resolution is rho and the accurate accumulator resolution is
-     * rho/srn . If both srn=0 and stn=0 , the classical Hough transform is used. Otherwise, both these
+     * rho/srn. If both srn=0 and stn=0, the classical Hough transform is used. Otherwise, both these
      * parameters should be positive.
      * @param stn For the multi-scale Hough transform, it is a divisor for the distance resolution theta.
      * @param min_theta For standard and multi-scale Hough transform, minimum angle to check for lines.
      * Must fall between 0 and max_theta.
-     * @param max_theta For standard and multi-scale Hough transform, maximum angle to check for lines.
-     * Must fall between min_theta and CV_PI.
+     * @param max_theta For standard and multi-scale Hough transform, an upper bound for the angle.
+     * Must fall between min_theta and CV_PI. The actual maximum angle in the accumulator may be slightly
+     * less than max_theta, depending on the parameters min_theta and theta.
      */
     public static void HoughLines(Mat image, Mat lines, double rho, double theta, int threshold, double srn, double stn, double min_theta, double max_theta) {
         HoughLines_0(image.nativeObj, lines.nativeObj, rho, theta, threshold, srn, stn, min_theta, max_theta);
@@ -3145,22 +3171,23 @@ public class Imgproc {
      *
      * @param image 8-bit, single-channel binary source image. The image may be modified by the function.
      * @param lines Output vector of lines. Each line is represented by a 2 or 3 element vector
-     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\) . \(\rho\) is the distance from the coordinate origin \((0,0)\) (top-left corner of
-     * the image). \(\theta\) is the line rotation angle in radians (
-     * \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ).
+     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\), where \(\rho\) is the distance from
+     * the coordinate origin \((0,0)\) (top-left corner of the image), \(\theta\) is the line rotation
+     * angle in radians ( \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ), and
      * \(\textrm{votes}\) is the value of accumulator.
      * @param rho Distance resolution of the accumulator in pixels.
      * @param theta Angle resolution of the accumulator in radians.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
-     * @param srn For the multi-scale Hough transform, it is a divisor for the distance resolution rho .
+     * @param srn For the multi-scale Hough transform, it is a divisor for the distance resolution rho.
      * The coarse accumulator distance resolution is rho and the accurate accumulator resolution is
-     * rho/srn . If both srn=0 and stn=0 , the classical Hough transform is used. Otherwise, both these
+     * rho/srn. If both srn=0 and stn=0, the classical Hough transform is used. Otherwise, both these
      * parameters should be positive.
      * @param stn For the multi-scale Hough transform, it is a divisor for the distance resolution theta.
      * @param min_theta For standard and multi-scale Hough transform, minimum angle to check for lines.
      * Must fall between 0 and max_theta.
-     * Must fall between min_theta and CV_PI.
+     * Must fall between min_theta and CV_PI. The actual maximum angle in the accumulator may be slightly
+     * less than max_theta, depending on the parameters min_theta and theta.
      */
     public static void HoughLines(Mat image, Mat lines, double rho, double theta, int threshold, double srn, double stn, double min_theta) {
         HoughLines_1(image.nativeObj, lines.nativeObj, rho, theta, threshold, srn, stn, min_theta);
@@ -3175,21 +3202,22 @@ public class Imgproc {
      *
      * @param image 8-bit, single-channel binary source image. The image may be modified by the function.
      * @param lines Output vector of lines. Each line is represented by a 2 or 3 element vector
-     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\) . \(\rho\) is the distance from the coordinate origin \((0,0)\) (top-left corner of
-     * the image). \(\theta\) is the line rotation angle in radians (
-     * \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ).
+     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\), where \(\rho\) is the distance from
+     * the coordinate origin \((0,0)\) (top-left corner of the image), \(\theta\) is the line rotation
+     * angle in radians ( \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ), and
      * \(\textrm{votes}\) is the value of accumulator.
      * @param rho Distance resolution of the accumulator in pixels.
      * @param theta Angle resolution of the accumulator in radians.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
-     * @param srn For the multi-scale Hough transform, it is a divisor for the distance resolution rho .
+     * @param srn For the multi-scale Hough transform, it is a divisor for the distance resolution rho.
      * The coarse accumulator distance resolution is rho and the accurate accumulator resolution is
-     * rho/srn . If both srn=0 and stn=0 , the classical Hough transform is used. Otherwise, both these
+     * rho/srn. If both srn=0 and stn=0, the classical Hough transform is used. Otherwise, both these
      * parameters should be positive.
      * @param stn For the multi-scale Hough transform, it is a divisor for the distance resolution theta.
      * Must fall between 0 and max_theta.
-     * Must fall between min_theta and CV_PI.
+     * Must fall between min_theta and CV_PI. The actual maximum angle in the accumulator may be slightly
+     * less than max_theta, depending on the parameters min_theta and theta.
      */
     public static void HoughLines(Mat image, Mat lines, double rho, double theta, int threshold, double srn, double stn) {
         HoughLines_2(image.nativeObj, lines.nativeObj, rho, theta, threshold, srn, stn);
@@ -3204,20 +3232,21 @@ public class Imgproc {
      *
      * @param image 8-bit, single-channel binary source image. The image may be modified by the function.
      * @param lines Output vector of lines. Each line is represented by a 2 or 3 element vector
-     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\) . \(\rho\) is the distance from the coordinate origin \((0,0)\) (top-left corner of
-     * the image). \(\theta\) is the line rotation angle in radians (
-     * \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ).
+     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\), where \(\rho\) is the distance from
+     * the coordinate origin \((0,0)\) (top-left corner of the image), \(\theta\) is the line rotation
+     * angle in radians ( \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ), and
      * \(\textrm{votes}\) is the value of accumulator.
      * @param rho Distance resolution of the accumulator in pixels.
      * @param theta Angle resolution of the accumulator in radians.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
-     * @param srn For the multi-scale Hough transform, it is a divisor for the distance resolution rho .
+     * @param srn For the multi-scale Hough transform, it is a divisor for the distance resolution rho.
      * The coarse accumulator distance resolution is rho and the accurate accumulator resolution is
-     * rho/srn . If both srn=0 and stn=0 , the classical Hough transform is used. Otherwise, both these
+     * rho/srn. If both srn=0 and stn=0, the classical Hough transform is used. Otherwise, both these
      * parameters should be positive.
      * Must fall between 0 and max_theta.
-     * Must fall between min_theta and CV_PI.
+     * Must fall between min_theta and CV_PI. The actual maximum angle in the accumulator may be slightly
+     * less than max_theta, depending on the parameters min_theta and theta.
      */
     public static void HoughLines(Mat image, Mat lines, double rho, double theta, int threshold, double srn) {
         HoughLines_3(image.nativeObj, lines.nativeObj, rho, theta, threshold, srn);
@@ -3232,19 +3261,20 @@ public class Imgproc {
      *
      * @param image 8-bit, single-channel binary source image. The image may be modified by the function.
      * @param lines Output vector of lines. Each line is represented by a 2 or 3 element vector
-     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\) . \(\rho\) is the distance from the coordinate origin \((0,0)\) (top-left corner of
-     * the image). \(\theta\) is the line rotation angle in radians (
-     * \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ).
+     * \((\rho, \theta)\) or \((\rho, \theta, \textrm{votes})\), where \(\rho\) is the distance from
+     * the coordinate origin \((0,0)\) (top-left corner of the image), \(\theta\) is the line rotation
+     * angle in radians ( \(0 \sim \textrm{vertical line}, \pi/2 \sim \textrm{horizontal line}\) ), and
      * \(\textrm{votes}\) is the value of accumulator.
      * @param rho Distance resolution of the accumulator in pixels.
      * @param theta Angle resolution of the accumulator in radians.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
      * The coarse accumulator distance resolution is rho and the accurate accumulator resolution is
-     * rho/srn . If both srn=0 and stn=0 , the classical Hough transform is used. Otherwise, both these
+     * rho/srn. If both srn=0 and stn=0, the classical Hough transform is used. Otherwise, both these
      * parameters should be positive.
      * Must fall between 0 and max_theta.
-     * Must fall between min_theta and CV_PI.
+     * Must fall between min_theta and CV_PI. The actual maximum angle in the accumulator may be slightly
+     * less than max_theta, depending on the parameters min_theta and theta.
      */
     public static void HoughLines(Mat image, Mat lines, double rho, double theta, int threshold) {
         HoughLines_4(image.nativeObj, lines.nativeObj, rho, theta, threshold);
@@ -3277,7 +3307,7 @@ public class Imgproc {
      * line segment.
      * @param rho Distance resolution of the accumulator in pixels.
      * @param theta Angle resolution of the accumulator in radians.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
      * @param minLineLength Minimum line length. Line segments shorter than that are rejected.
      * @param maxLineGap Maximum allowed gap between points on the same line to link them.
@@ -3310,7 +3340,7 @@ public class Imgproc {
      * line segment.
      * @param rho Distance resolution of the accumulator in pixels.
      * @param theta Angle resolution of the accumulator in radians.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
      * @param minLineLength Minimum line length. Line segments shorter than that are rejected.
      *
@@ -3342,7 +3372,7 @@ public class Imgproc {
      * line segment.
      * @param rho Distance resolution of the accumulator in pixels.
      * @param theta Angle resolution of the accumulator in radians.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
      *
      * SEE: LineSegmentDetector
@@ -3365,13 +3395,14 @@ public class Imgproc {
      * @param lines Output vector of found lines. Each vector is encoded as a vector&lt;Vec3d&gt; \((votes, rho, theta)\).
      * The larger the value of 'votes', the higher the reliability of the Hough line.
      * @param lines_max Max count of Hough lines.
-     * @param threshold Accumulator threshold parameter. Only those lines are returned that get enough
+     * @param threshold %Accumulator threshold parameter. Only those lines are returned that get enough
      * votes ( \(&gt;\texttt{threshold}\) ).
      * @param min_rho Minimum value for \(\rho\) for the accumulator (Note: \(\rho\) can be negative. The absolute value \(|\rho|\) is the distance of a line to the origin.).
      * @param max_rho Maximum value for \(\rho\) for the accumulator.
      * @param rho_step Distance resolution of the accumulator.
      * @param min_theta Minimum angle value of the accumulator in radians.
-     * @param max_theta Maximum angle value of the accumulator in radians.
+     * @param max_theta Upper bound for the angle value of the accumulator in radians. The actual maximum
+     * angle may be slightly less than max_theta, depending on the parameters min_theta and theta_step.
      * @param theta_step Angle resolution of the accumulator in radians.
      */
     public static void HoughLinesPointSet(Mat point, Mat lines, int lines_max, int threshold, double min_rho, double max_rho, double rho_step, double min_theta, double max_theta, double theta_step) {
@@ -3761,7 +3792,7 @@ public class Imgproc {
      * @param src input image; the number of channels can be arbitrary, but the depth should be one of
      * CV_8U, CV_16U, CV_16S, CV_32F or CV_64F.
      * @param dst output image of the same size and type as src.
-     * @param kernel structuring element used for dilation; if elemenat=Mat(), a 3 x 3 rectangular
+     * @param kernel structuring element used for dilation; if element=Mat(), a 3 x 3 rectangular
      * structuring element is used. Kernel can be created using #getStructuringElement
      * @param anchor position of the anchor within the element; default value (-1, -1) means that the
      * anchor is at the element center.
@@ -3787,7 +3818,7 @@ public class Imgproc {
      * @param src input image; the number of channels can be arbitrary, but the depth should be one of
      * CV_8U, CV_16U, CV_16S, CV_32F or CV_64F.
      * @param dst output image of the same size and type as src.
-     * @param kernel structuring element used for dilation; if elemenat=Mat(), a 3 x 3 rectangular
+     * @param kernel structuring element used for dilation; if element=Mat(), a 3 x 3 rectangular
      * structuring element is used. Kernel can be created using #getStructuringElement
      * @param anchor position of the anchor within the element; default value (-1, -1) means that the
      * anchor is at the element center.
@@ -3812,7 +3843,7 @@ public class Imgproc {
      * @param src input image; the number of channels can be arbitrary, but the depth should be one of
      * CV_8U, CV_16U, CV_16S, CV_32F or CV_64F.
      * @param dst output image of the same size and type as src.
-     * @param kernel structuring element used for dilation; if elemenat=Mat(), a 3 x 3 rectangular
+     * @param kernel structuring element used for dilation; if element=Mat(), a 3 x 3 rectangular
      * structuring element is used. Kernel can be created using #getStructuringElement
      * @param anchor position of the anchor within the element; default value (-1, -1) means that the
      * anchor is at the element center.
@@ -3836,7 +3867,7 @@ public class Imgproc {
      * @param src input image; the number of channels can be arbitrary, but the depth should be one of
      * CV_8U, CV_16U, CV_16S, CV_32F or CV_64F.
      * @param dst output image of the same size and type as src.
-     * @param kernel structuring element used for dilation; if elemenat=Mat(), a 3 x 3 rectangular
+     * @param kernel structuring element used for dilation; if element=Mat(), a 3 x 3 rectangular
      * structuring element is used. Kernel can be created using #getStructuringElement
      * @param anchor position of the anchor within the element; default value (-1, -1) means that the
      * anchor is at the element center.
@@ -3859,7 +3890,7 @@ public class Imgproc {
      * @param src input image; the number of channels can be arbitrary, but the depth should be one of
      * CV_8U, CV_16U, CV_16S, CV_32F or CV_64F.
      * @param dst output image of the same size and type as src.
-     * @param kernel structuring element used for dilation; if elemenat=Mat(), a 3 x 3 rectangular
+     * @param kernel structuring element used for dilation; if element=Mat(), a 3 x 3 rectangular
      * structuring element is used. Kernel can be created using #getStructuringElement
      * anchor is at the element center.
      * SEE:  erode, morphologyEx, getStructuringElement
@@ -4031,7 +4062,7 @@ public class Imgproc {
      *     resize(src, dst, Size(), 0.5, 0.5, interpolation);
      * </code>
      * To shrink an image, it will generally look best with #INTER_AREA interpolation, whereas to
-     * enlarge an image, it will generally look best with c#INTER_CUBIC (slow) or #INTER_LINEAR
+     * enlarge an image, it will generally look best with #INTER_CUBIC (slow) or #INTER_LINEAR
      * (faster but still looks OK).
      *
      * @param src input image.
@@ -4070,7 +4101,7 @@ public class Imgproc {
      *     resize(src, dst, Size(), 0.5, 0.5, interpolation);
      * </code>
      * To shrink an image, it will generally look best with #INTER_AREA interpolation, whereas to
-     * enlarge an image, it will generally look best with c#INTER_CUBIC (slow) or #INTER_LINEAR
+     * enlarge an image, it will generally look best with #INTER_CUBIC (slow) or #INTER_LINEAR
      * (faster but still looks OK).
      *
      * @param src input image.
@@ -4108,7 +4139,7 @@ public class Imgproc {
      *     resize(src, dst, Size(), 0.5, 0.5, interpolation);
      * </code>
      * To shrink an image, it will generally look best with #INTER_AREA interpolation, whereas to
-     * enlarge an image, it will generally look best with c#INTER_CUBIC (slow) or #INTER_LINEAR
+     * enlarge an image, it will generally look best with #INTER_CUBIC (slow) or #INTER_LINEAR
      * (faster but still looks OK).
      *
      * @param src input image.
@@ -4145,7 +4176,7 @@ public class Imgproc {
      *     resize(src, dst, Size(), 0.5, 0.5, interpolation);
      * </code>
      * To shrink an image, it will generally look best with #INTER_AREA interpolation, whereas to
-     * enlarge an image, it will generally look best with c#INTER_CUBIC (slow) or #INTER_LINEAR
+     * enlarge an image, it will generally look best with #INTER_CUBIC (slow) or #INTER_LINEAR
      * (faster but still looks OK).
      *
      * @param src input image.
@@ -4400,7 +4431,7 @@ public class Imgproc {
      * where values of pixels with non-integer coordinates are computed using one of available
      * interpolation methods. \(map_x\) and \(map_y\) can be encoded as separate floating-point maps
      * in \(map_1\) and \(map_2\) respectively, or interleaved floating-point maps of \((x,y)\) in
-     * \(map_1\), or fixed-point maps created by using convertMaps. The reason you might want to
+     * \(map_1\), or fixed-point maps created by using #convertMaps. The reason you might want to
      * convert from floating to fixed-point representations of a map is that they can yield much faster
      * (\~2x) remapping operations. In the converted case, \(map_1\) contains pairs (cvFloor(x),
      * cvFloor(y)) and \(map_2\) contains indices in a table of interpolation coefficients.
@@ -4410,7 +4441,7 @@ public class Imgproc {
      * @param src Source image.
      * @param dst Destination image. It has the same size as map1 and the same type as src .
      * @param map1 The first map of either (x,y) points or just x values having the type CV_16SC2 ,
-     * CV_32FC1, or CV_32FC2. See convertMaps for details on converting a floating point
+     * CV_32FC1, or CV_32FC2. See #convertMaps for details on converting a floating point
      * representation to fixed-point for speed.
      * @param map2 The second map of y values having the type CV_16UC1, CV_32FC1, or none (empty map
      * if map1 is (x,y) points), respectively.
@@ -4437,7 +4468,7 @@ public class Imgproc {
      * where values of pixels with non-integer coordinates are computed using one of available
      * interpolation methods. \(map_x\) and \(map_y\) can be encoded as separate floating-point maps
      * in \(map_1\) and \(map_2\) respectively, or interleaved floating-point maps of \((x,y)\) in
-     * \(map_1\), or fixed-point maps created by using convertMaps. The reason you might want to
+     * \(map_1\), or fixed-point maps created by using #convertMaps. The reason you might want to
      * convert from floating to fixed-point representations of a map is that they can yield much faster
      * (\~2x) remapping operations. In the converted case, \(map_1\) contains pairs (cvFloor(x),
      * cvFloor(y)) and \(map_2\) contains indices in a table of interpolation coefficients.
@@ -4447,7 +4478,7 @@ public class Imgproc {
      * @param src Source image.
      * @param dst Destination image. It has the same size as map1 and the same type as src .
      * @param map1 The first map of either (x,y) points or just x values having the type CV_16SC2 ,
-     * CV_32FC1, or CV_32FC2. See convertMaps for details on converting a floating point
+     * CV_32FC1, or CV_32FC2. See #convertMaps for details on converting a floating point
      * representation to fixed-point for speed.
      * @param map2 The second map of y values having the type CV_16UC1, CV_32FC1, or none (empty map
      * if map1 is (x,y) points), respectively.
@@ -4473,7 +4504,7 @@ public class Imgproc {
      * where values of pixels with non-integer coordinates are computed using one of available
      * interpolation methods. \(map_x\) and \(map_y\) can be encoded as separate floating-point maps
      * in \(map_1\) and \(map_2\) respectively, or interleaved floating-point maps of \((x,y)\) in
-     * \(map_1\), or fixed-point maps created by using convertMaps. The reason you might want to
+     * \(map_1\), or fixed-point maps created by using #convertMaps. The reason you might want to
      * convert from floating to fixed-point representations of a map is that they can yield much faster
      * (\~2x) remapping operations. In the converted case, \(map_1\) contains pairs (cvFloor(x),
      * cvFloor(y)) and \(map_2\) contains indices in a table of interpolation coefficients.
@@ -4483,7 +4514,7 @@ public class Imgproc {
      * @param src Source image.
      * @param dst Destination image. It has the same size as map1 and the same type as src .
      * @param map1 The first map of either (x,y) points or just x values having the type CV_16SC2 ,
-     * CV_32FC1, or CV_32FC2. See convertMaps for details on converting a floating point
+     * CV_32FC1, or CV_32FC2. See #convertMaps for details on converting a floating point
      * representation to fixed-point for speed.
      * @param map2 The second map of y values having the type CV_16UC1, CV_32FC1, or none (empty map
      * if map1 is (x,y) points), respectively.
@@ -4513,7 +4544,7 @@ public class Imgproc {
      * <ul>
      *   <li>
      *  \(\texttt{(CV_32FC1, CV_32FC1)} \rightarrow \texttt{(CV_16SC2, CV_16UC1)}\). This is the
-     * most frequently used conversion operation, in which the original floating-point maps (see remap )
+     * most frequently used conversion operation, in which the original floating-point maps (see #remap)
      * are converted to a more compact and much faster fixed-point representation. The first output array
      * contains the rounded coordinates and the second array (created only when nninterpolation=false )
      * contains indices in the interpolation tables.
@@ -4560,7 +4591,7 @@ public class Imgproc {
      * <ul>
      *   <li>
      *  \(\texttt{(CV_32FC1, CV_32FC1)} \rightarrow \texttt{(CV_16SC2, CV_16UC1)}\). This is the
-     * most frequently used conversion operation, in which the original floating-point maps (see remap )
+     * most frequently used conversion operation, in which the original floating-point maps (see #remap)
      * are converted to a more compact and much faster fixed-point representation. The first output array
      * contains the rounded coordinates and the second array (created only when nninterpolation=false )
      * contains indices in the interpolation tables.
@@ -5019,7 +5050,7 @@ public class Imgproc {
      * example. In case of multi-channel images, sums for each channel are accumulated independently.
      *
      * As a practical example, the next figure shows the calculation of the integral of a straight
-     * rectangle Rect(3,3,3,2) and of a tilted rectangle Rect(5,1,2,3) . The selected pixels in the
+     * rectangle Rect(4,4,3,2) and of a tilted rectangle Rect(5,1,2,3) . The selected pixels in the
      * original image are shown, as well as the relative pixels in the integral images sum and tilted .
      *
      * ![integral calculation example](pics/integral.png)
@@ -5058,7 +5089,7 @@ public class Imgproc {
      * example. In case of multi-channel images, sums for each channel are accumulated independently.
      *
      * As a practical example, the next figure shows the calculation of the integral of a straight
-     * rectangle Rect(3,3,3,2) and of a tilted rectangle Rect(5,1,2,3) . The selected pixels in the
+     * rectangle Rect(4,4,3,2) and of a tilted rectangle Rect(5,1,2,3) . The selected pixels in the
      * original image are shown, as well as the relative pixels in the integral images sum and tilted .
      *
      * ![integral calculation example](pics/integral.png)
@@ -5096,7 +5127,7 @@ public class Imgproc {
      * example. In case of multi-channel images, sums for each channel are accumulated independently.
      *
      * As a practical example, the next figure shows the calculation of the integral of a straight
-     * rectangle Rect(3,3,3,2) and of a tilted rectangle Rect(5,1,2,3) . The selected pixels in the
+     * rectangle Rect(4,4,3,2) and of a tilted rectangle Rect(5,1,2,3) . The selected pixels in the
      * original image are shown, as well as the relative pixels in the integral images sum and tilted .
      *
      * ![integral calculation example](pics/integral.png)
@@ -5787,6 +5818,22 @@ public class Imgproc {
     // C++:  void cv::calcHist(vector_Mat images, vector_int channels, Mat mask, Mat& hist, vector_int histSize, vector_float ranges, bool accumulate = false)
     //
 
+    /**
+     *
+     *
+     * this variant supports only uniform histograms.
+     *
+     * ranges argument is either empty vector or a flattened vector of histSize.size()*2 elements
+     * (histSize.size() element pairs). The first and second elements of each pair specify the lower and
+     * upper boundaries.
+     * @param images automatically generated
+     * @param channels automatically generated
+     * @param mask automatically generated
+     * @param hist automatically generated
+     * @param histSize automatically generated
+     * @param ranges automatically generated
+     * @param accumulate automatically generated
+     */
     public static void calcHist(List<Mat> images, MatOfInt channels, Mat mask, Mat hist, MatOfInt histSize, MatOfFloat ranges, boolean accumulate) {
         Mat images_mat = Converters.vector_Mat_to_Mat(images);
         Mat channels_mat = channels;
@@ -5795,6 +5842,21 @@ public class Imgproc {
         calcHist_0(images_mat.nativeObj, channels_mat.nativeObj, mask.nativeObj, hist.nativeObj, histSize_mat.nativeObj, ranges_mat.nativeObj, accumulate);
     }
 
+    /**
+     *
+     *
+     * this variant supports only uniform histograms.
+     *
+     * ranges argument is either empty vector or a flattened vector of histSize.size()*2 elements
+     * (histSize.size() element pairs). The first and second elements of each pair specify the lower and
+     * upper boundaries.
+     * @param images automatically generated
+     * @param channels automatically generated
+     * @param mask automatically generated
+     * @param hist automatically generated
+     * @param histSize automatically generated
+     * @param ranges automatically generated
+     */
     public static void calcHist(List<Mat> images, MatOfInt channels, Mat mask, Mat hist, MatOfInt histSize, MatOfFloat ranges) {
         Mat images_mat = Converters.vector_Mat_to_Mat(images);
         Mat channels_mat = channels;
@@ -6494,10 +6556,11 @@ public class Imgproc {
      * function unless the #FLOODFILL_MASK_ONLY flag is set in the second variant of the function. See
      * the details below.
      * @param mask Operation mask that should be a single-channel 8-bit image, 2 pixels wider and 2 pixels
-     * taller than image. Since this is both an input and output parameter, you must take responsibility
-     * of initializing it. Flood-filling cannot go across non-zero pixels in the input mask. For example,
+     * taller than image. If an empty Mat is passed it will be created automatically. Since this is both an
+     * input and output parameter, you must take responsibility of initializing it.
+     * Flood-filling cannot go across non-zero pixels in the input mask. For example,
      * an edge detector output can be used as a mask to stop filling at edges. On output, pixels in the
-     * mask corresponding to filled pixels in the image are set to 1 or to the a value specified in flags
+     * mask corresponding to filled pixels in the image are set to 1 or to the specified value in flags
      * as described below. Additionally, the function fills the border of the mask with ones to simplify
      * internal processing. It is therefore possible to use the same mask in multiple calls to the function
      * to make sure the filled areas do not overlap.
@@ -6596,10 +6659,11 @@ public class Imgproc {
      * function unless the #FLOODFILL_MASK_ONLY flag is set in the second variant of the function. See
      * the details below.
      * @param mask Operation mask that should be a single-channel 8-bit image, 2 pixels wider and 2 pixels
-     * taller than image. Since this is both an input and output parameter, you must take responsibility
-     * of initializing it. Flood-filling cannot go across non-zero pixels in the input mask. For example,
+     * taller than image. If an empty Mat is passed it will be created automatically. Since this is both an
+     * input and output parameter, you must take responsibility of initializing it.
+     * Flood-filling cannot go across non-zero pixels in the input mask. For example,
      * an edge detector output can be used as a mask to stop filling at edges. On output, pixels in the
-     * mask corresponding to filled pixels in the image are set to 1 or to the a value specified in flags
+     * mask corresponding to filled pixels in the image are set to 1 or to the specified value in flags
      * as described below. Additionally, the function fills the border of the mask with ones to simplify
      * internal processing. It is therefore possible to use the same mask in multiple calls to the function
      * to make sure the filled areas do not overlap.
@@ -6697,10 +6761,11 @@ public class Imgproc {
      * function unless the #FLOODFILL_MASK_ONLY flag is set in the second variant of the function. See
      * the details below.
      * @param mask Operation mask that should be a single-channel 8-bit image, 2 pixels wider and 2 pixels
-     * taller than image. Since this is both an input and output parameter, you must take responsibility
-     * of initializing it. Flood-filling cannot go across non-zero pixels in the input mask. For example,
+     * taller than image. If an empty Mat is passed it will be created automatically. Since this is both an
+     * input and output parameter, you must take responsibility of initializing it.
+     * Flood-filling cannot go across non-zero pixels in the input mask. For example,
      * an edge detector output can be used as a mask to stop filling at edges. On output, pixels in the
-     * mask corresponding to filled pixels in the image are set to 1 or to the a value specified in flags
+     * mask corresponding to filled pixels in the image are set to 1 or to the specified value in flags
      * as described below. Additionally, the function fills the border of the mask with ones to simplify
      * internal processing. It is therefore possible to use the same mask in multiple calls to the function
      * to make sure the filled areas do not overlap.
@@ -6797,10 +6862,11 @@ public class Imgproc {
      * function unless the #FLOODFILL_MASK_ONLY flag is set in the second variant of the function. See
      * the details below.
      * @param mask Operation mask that should be a single-channel 8-bit image, 2 pixels wider and 2 pixels
-     * taller than image. Since this is both an input and output parameter, you must take responsibility
-     * of initializing it. Flood-filling cannot go across non-zero pixels in the input mask. For example,
+     * taller than image. If an empty Mat is passed it will be created automatically. Since this is both an
+     * input and output parameter, you must take responsibility of initializing it.
+     * Flood-filling cannot go across non-zero pixels in the input mask. For example,
      * an edge detector output can be used as a mask to stop filling at edges. On output, pixels in the
-     * mask corresponding to filled pixels in the image are set to 1 or to the a value specified in flags
+     * mask corresponding to filled pixels in the image are set to 1 or to the specified value in flags
      * as described below. Additionally, the function fills the border of the mask with ones to simplify
      * internal processing. It is therefore possible to use the same mask in multiple calls to the function
      * to make sure the filled areas do not overlap.
@@ -6896,10 +6962,11 @@ public class Imgproc {
      * function unless the #FLOODFILL_MASK_ONLY flag is set in the second variant of the function. See
      * the details below.
      * @param mask Operation mask that should be a single-channel 8-bit image, 2 pixels wider and 2 pixels
-     * taller than image. Since this is both an input and output parameter, you must take responsibility
-     * of initializing it. Flood-filling cannot go across non-zero pixels in the input mask. For example,
+     * taller than image. If an empty Mat is passed it will be created automatically. Since this is both an
+     * input and output parameter, you must take responsibility of initializing it.
+     * Flood-filling cannot go across non-zero pixels in the input mask. For example,
      * an edge detector output can be used as a mask to stop filling at edges. On output, pixels in the
-     * mask corresponding to filled pixels in the image are set to 1 or to the a value specified in flags
+     * mask corresponding to filled pixels in the image are set to 1 or to the specified value in flags
      * as described below. Additionally, the function fills the border of the mask with ones to simplify
      * internal processing. It is therefore possible to use the same mask in multiple calls to the function
      * to make sure the filled areas do not overlap.
@@ -9562,7 +9629,7 @@ public class Imgproc {
 //javadoc:getTextSize(text, fontFace, fontScale, thickness, baseLine)
 public static Size getTextSize(String text, int fontFace, double fontScale, int thickness, int[] baseLine) {
     if(baseLine != null && baseLine.length != 1)
-        throw new java.lang.IllegalArgumentException("'baseLine' must be 'int[1]' or 'null'.");
+        throw new IllegalArgumentException("'baseLine' must be 'int[1]' or 'null'.");
     Size retVal = new Size(n_getTextSize(text, fontFace, fontScale, thickness, baseLine));
     return retVal;
 }
@@ -9627,6 +9694,9 @@ public static Size getTextSize(String text, int fontFace, double fontScale, int 
     private static native void blur_0(long src_nativeObj, long dst_nativeObj, double ksize_width, double ksize_height, double anchor_x, double anchor_y, int borderType);
     private static native void blur_1(long src_nativeObj, long dst_nativeObj, double ksize_width, double ksize_height, double anchor_x, double anchor_y);
     private static native void blur_2(long src_nativeObj, long dst_nativeObj, double ksize_width, double ksize_height);
+
+    // C++:  void cv::stackBlur(Mat src, Mat& dst, Size ksize)
+    private static native void stackBlur_0(long src_nativeObj, long dst_nativeObj, double ksize_width, double ksize_height);
 
     // C++:  void cv::filter2D(Mat src, Mat& dst, int ddepth, Mat kernel, Point anchor = Point(-1,-1), double delta = 0, int borderType = BORDER_DEFAULT)
     private static native void filter2D_0(long src_nativeObj, long dst_nativeObj, int ddepth, long kernel_nativeObj, double anchor_x, double anchor_y, double delta, int borderType);

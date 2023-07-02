@@ -1,23 +1,36 @@
 package com.anjarmath.njawani;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tflite.client.TfLiteInitializationOptions;
+import com.google.android.gms.tflite.gpu.GpuDelegate;
+import com.google.android.gms.tflite.gpu.support.TfLiteGpu;
+import com.google.android.gms.tflite.java.TfLite;
+
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.tensorflow.lite.Interpreter;
-import org.tensorflow.lite.gpu.CompatibilityList;
-import org.tensorflow.lite.gpu.GpuDelegate;
+import org.tensorflow.lite.InterpreterApi.Options.TfLiteRuntime;
+
+import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.tensorflow.lite.InterpreterApi;
+import org.tensorflow.lite.gpu.GpuDelegateFactory;
+import org.tensorflow.lite.gpu.*;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -31,9 +44,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.Executor;
 
-public class objectDetectorClass {
-    private Interpreter interpreter;
+public class objectDetectorClass<task> {
+    private InterpreterApi interpreter;
     private List<String> labelList;
     private int INPUT_SIZE;
     private int PIXEL_SIZE = 3;
@@ -48,18 +62,52 @@ public class objectDetectorClass {
     objectDetectorClass (Context mcontext, TextView textView, AssetManager assetManager, String modelpath, String labelpath, int inputSize) throws IOException {
         context = mcontext;
         INPUT_SIZE = inputSize;
-        Interpreter.Options options = new Interpreter.Options();
-        CompatibilityList compatList = new CompatibilityList();
-        if(compatList.isDelegateSupportedOnThisDevice()){
-            // Jika device mendukung GPU, jalankan GPU
-            GpuDelegate.Options delegateOptions = compatList.getBestOptionsForThisDevice();
-            GpuDelegate gpuDelegate = new GpuDelegate(delegateOptions);
-            options.addDelegate(gpuDelegate);
-        } else {
-            // Jika device tidak mendukung GPU, jalankan di 4 threads
-            options.setNumThreads(4);
-        }
-        interpreter = new Interpreter(loadModelFile(assetManager,modelpath), options);
+        Task<Boolean> useGpuTask = TfLiteGpu.isGpuDelegateAvailable(context);
+
+        Task<Void> initializeTask = useGpuTask.continueWithTask(task -> {
+            boolean isGpuAvailable = task.getResult();
+            TfLiteInitializationOptions.Builder builder = TfLiteInitializationOptions.builder();
+            builder.setEnableGpuDelegateSupport(isGpuAvailable);
+            TfLiteInitializationOptions initializationOptions = builder.build();
+
+            return TfLite.initialize(context, initializationOptions);
+        });
+
+
+        initializeTask.addOnSuccessListener(task -> {
+            Log.i(TAG, "INITIALIZE TF: SUCCESS");
+
+            Task<InterpreterApi.Options> interpreterOptionTask = useGpuTask.continueWith(isUseGpu -> {
+                InterpreterApi.Options options = new InterpreterApi.Options().setRuntime(TfLiteRuntime.FROM_SYSTEM_ONLY);
+                if (isUseGpu.getResult()) {
+                    options.addDelegateFactory(new GpuDelegateFactory());
+                } else {
+                    options.setNumThreads(4);
+                }
+                return options;
+            });
+
+            interpreterOptionTask.addOnCompleteListener(options -> {
+               if (options.isSuccessful()) {
+                   try {
+                       interpreter = InterpreterApi.create(loadModelFile(assetManager, modelpath), options.getResult());
+                       if (interpreter != null) {
+                           Log.i(TAG, "CREATE INTERPRETER: SUCCESS");
+                       } else {
+                           // Failed to create the interpreter
+                           Log.e(TAG, "Failed to create the interpreter");
+                       }
+                   } catch (IOException e) {
+                       Log.e(TAG, e.getMessage());
+                   }
+               }
+            });
+        })
+        .addOnFailureListener(e -> {
+            Log.e("Interpreter", String.format("Cannot initialize interpreter: %s", e.getMessage()));
+        });
+
+
         labelList = loadLabelList(assetManager,labelpath);
         textView.setText(label);
     }
@@ -114,7 +162,12 @@ public class objectDetectorClass {
         output_map.put(3, classes);
         output_map.put(0, scores);
 
-        interpreter.runForMultipleInputsOutputs(input, output_map);
+        try {
+            interpreter.runForMultipleInputsOutputs(input, output_map);
+            Log.i(TAG, "recognizeImage: SUKSES COY");
+        } catch (Exception e) {
+            Log.e(TAG, "recognizeImage: "+e);
+        }
 
         Object value = output_map.get(1);
         Object object_class = output_map.get(3);

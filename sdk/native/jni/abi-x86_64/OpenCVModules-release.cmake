@@ -18,7 +18,7 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_libcpufeatures "${_IMPORT_PREFIX}/sdk/native
 # Import target "libjpeg-turbo" for configuration "Release"
 set_property(TARGET libjpeg-turbo APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(libjpeg-turbo PROPERTIES
-  IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
+  IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "ASM_NASM;C"
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/sdk/native/3rdparty/libs/x86_64/liblibjpeg-turbo.a"
   )
 

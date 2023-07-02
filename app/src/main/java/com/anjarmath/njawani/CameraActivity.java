@@ -138,14 +138,11 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
 
 
         take_picture_button = findViewById(R.id.take_picture);
-        take_picture_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (take_image==0){
-                    take_image=1;
-                } else {
-                    take_image=0;
-                }
+        take_picture_button.setOnClickListener(v -> {
+            if (take_image==0){
+                take_image=1;
+            } else {
+                take_image=0;
             }
         });
     }
@@ -201,16 +198,13 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
         mRGBA = inputFrame.rgba();
-        Mat out = objectDetectorClass.recognizeImage(mRGBA);
+        objectDetectorClass.recognizeImage(mRGBA);
         label = objectDetectorClass.getLabel();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (Arrays.asList(labellatin).indexOf(label)==-1) {
-                    textView.setText("Tidak ada objek dikenal");
-                } else {
-                    textView.setText(labelaksara[Arrays.asList(labellatin).indexOf(label)]+" ");
-                }
+        runOnUiThread(() -> {
+            if (Arrays.asList(labellatin).indexOf(label)==-1) {
+                textView.setText("Tidak ada objek dikenal");
+            } else {
+                textView.setText(labelaksara[Arrays.asList(labellatin).indexOf(label)]+" ");
             }
         });
 
